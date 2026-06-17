@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>城市踏勘官 CityScout Demo</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5c6773;
+      --line: #d8dee6;
+      --panel: #ffffff;
+      --bg: #f4f7f8;
+      --blue: #1769e0;
+      --green: #16805d;
+      --yellow: #946200;
+      --red: #b43b31;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+    header {
+      padding: 24px clamp(16px, 4vw, 48px) 18px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4vw, 44px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      max-width: 920px;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .topline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .topline a,
+    .topline span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: #fff;
+      text-decoration: none;
+      font-size: 13px;
+    }
+    main {
+      display: grid;
+      grid-template-columns: minmax(280px, 380px) 1fr;
+      gap: 16px;
+      padding: 16px clamp(16px, 4vw, 48px) 32px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: 650;
+      font-size: 14px;
+    }
+    input, select {
+      width: 100%;
+      height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0 10px;
+      font-size: 14px;
+      background: #fff;
+      color: var(--ink);
+    }
+    button {
+      width: 100%;
+      height: 42px;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--blue);
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #fff;
+      color: var(--blue);
+      border: 1px solid #9fc0f3;
+    }
+    .toggle {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      margin-top: 14px;
+      padding: 10px;
+      background: #f8fafb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .toggle label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      font-weight: 650;
+    }
+    .toggle input {
+      width: 18px;
+      height: 18px;
+    }
+    .toggle small {
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .stack {
+      display: grid;
+      gap: 16px;
+    }
+    .map {
+      min-height: 280px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(90deg, rgba(23,105,224,.08) 1px, transparent 1px),
+        linear-gradient(rgba(23,105,224,.08) 1px, transparent 1px),
+        #eef5f2;
+      background-size: 44px 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .route {
+      position: absolute;
+      inset: 34px 42px;
+    }
+    .route svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .pin {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      border: 3px solid #fff;
+      box-shadow: 0 4px 12px rgba(0,0,0,.18);
+      transform: translate(-50%, -50%);
+    }
+    .legend {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 14px 0 8px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 10px;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+    .metric strong {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+    .metric span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 9px;
+      background: #fff;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--muted);
+      font-size: 13px;
+      background: #f8fafb;
+    }
+    .callout {
+      border-left: 4px solid var(--green);
+      background: #eef8f4;
+      padding: 12px;
+      border-radius: 6px;
+      line-height: 1.65;
+    }
+    .risk {
+      border-left-color: var(--yellow);
+      background: #fff8e8;
+    }
+    .summary {
+      margin: 0;
+      padding-left: 20px;
+      line-height: 1.7;
+    }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .flow-step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #f8fafb;
+      min-height: 84px;
+    }
+    .flow-step strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--blue);
+      font-size: 13px;
+    }
+    .flow-step span {
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+    pre {
+      margin: 0;
+      padding: 12px;
+      overflow: auto;
+      border-radius: 8px;
+      background: #13202b;
+      color: #dbeafe;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    @media (max-width: 860px) {
+      main { grid-template-columns: 1fr; }
+      .map { min-height: 240px; }
+      table { font-size: 13px; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .flow { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>城市踏勘官 CityScout</h1>
+    <div class="subtitle">输入片区、任务类型和时间预算，生成可执行的现场踏勘路线、观察清单、风险点、拍照建议和汇报摘要。Demo 展示的是产品形态，正式版可接入高德 Web API 与 JSAPI。</div>
+    <div class="topline">
+      <span>高德开放平台 Skill 创意征集赛</span>
+      <a href="https://lbs.amap.com/ai/skillzone" target="_blank" rel="noreferrer">SkillZone</a>
+      <a href="https://lbs.amap.com/api/webservice/guide/api/georegeo" target="_blank" rel="noreferrer">地理编码</a>
+      <a href="https://lbs.amap.com/api/webservice/guide/api/search" target="_blank" rel="noreferrer">POI 搜索</a>
+      <a href="https://lbs.amap.com/api/webservice/guide/api/direction" target="_blank" rel="noreferrer">路线规划</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>生成任务</h2>
+      <label for="area">城市片区</label>
+      <input id="area" value="福州烟台山历史风貌区">
+
+      <label for="type">任务类型</label>
+      <select id="type">
+        <option>城市更新踏勘</option>
+        <option>商业选址调研</option>
+        <option>文旅动线策划</option>
+        <option>夜间安全评估</option>
+        <option>街区活力评估</option>
+      </select>
+
+      <label for="time">时间预算</label>
+      <select id="time">
+        <option>90 分钟</option>
+        <option>60 分钟</option>
+        <option>120 分钟</option>
+      </select>
+
+      <label for="mode">出行方式</label>
+      <select id="mode">
+        <option>步行</option>
+        <option>驾车</option>
+        <option>公交</option>
+      </select>
+
+      <button id="generate">生成踏勘路线</button>
+      <button id="export" class="secondary" type="button">导出提交摘要</button>
+
+      <div class="toggle">
+        <label><input id="realApi" type="checkbox">真实 API 接入模式</label>
+        <small>当前默认使用示例数据。勾选后会展示真实接入需要的高德 Key 与接口调用参数，但不会上传或保存任何密钥。</small>
+      </div>
+
+      <h3>高德能力调用</h3>
+      <div class="badges">
+        <span class="badge">Geocoding</span>
+        <span class="badge">POI Search</span>
+        <span class="badge">Around Search</span>
+        <span class="badge">Direction API</span>
+        <span class="badge">JSAPI Map</span>
+      </div>
+    </section>
+
+    <section class="stack">
+      <div class="map" aria-label="路线示意图">
+        <div class="route">
+          <svg viewBox="0 0 600 260" role="img" aria-label="现场踏勘路线">
+            <path d="M45 210 C90 130, 150 160, 190 92 S300 62, 338 118 S440 190, 520 58" fill="none" stroke="#1769e0" stroke-width="8" stroke-linecap="round" stroke-dasharray="1 16"/>
+          </svg>
+        </div>
+        <div class="pin" style="left: 9%; top: 78%;">1</div>
+        <div class="pin" style="left: 28%; top: 38%;">2</div>
+        <div class="pin" style="left: 47%; top: 30%;">3</div>
+        <div class="pin" style="left: 61%; top: 48%;">4</div>
+        <div class="pin" style="left: 76%; top: 68%;">5</div>
+        <div class="pin" style="left: 88%; top: 22%;">6</div>
+        <div class="legend">示意路线：正式版由高德路线规划 API 生成</div>
+      </div>
+
+      <section class="panel">
+        <h2 id="routeTitle">福州烟台山历史风貌区 · 90 分钟步行踏勘</h2>
+        <div class="callout" id="judgement">任务判断：这是一次城市更新前期踏勘，重点不是游玩打卡，而是验证片区入口、历史建筑利用、商业连续性、慢行体验、公共服务和夜间安全。</div>
+      </section>
+
+      <section class="panel">
+        <h2>路线指标</h2>
+        <div class="metric-grid">
+          <div class="metric"><strong id="metricStops">6</strong><span>踏勘点位</span></div>
+          <div class="metric"><strong id="metricTime">90</strong><span>分钟预算</span></div>
+          <div class="metric"><strong id="metricPois">38</strong><span>周边 POI 样本</span></div>
+          <div class="metric"><strong id="metricEvidence">18</strong><span>现场证据项</span></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>高德接口链路</h2>
+        <div class="flow">
+          <div class="flow-step"><strong>1 Geocoding</strong><span>片区名称转坐标，确定踏勘中心点。</span></div>
+          <div class="flow-step"><strong>2 Around Search</strong><span>按半径检索交通、商业、公共服务和安全节点。</span></div>
+          <div class="flow-step"><strong>3 POI Filter</strong><span>按任务类型筛选能回答现场问题的点位。</span></div>
+          <div class="flow-step"><strong>4 Direction</strong><span>按时间预算和出行方式组织路线。</span></div>
+          <div class="flow-step"><strong>5 Skill Output</strong><span>生成观察清单、拍照点和汇报摘要。</span></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>推荐路线与观察清单</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>顺序</th>
+              <th>点位</th>
+              <th>为什么去</th>
+              <th>现场观察</th>
+              <th>拍照建议</th>
+            </tr>
+          </thead>
+          <tbody id="routeRows"></tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <h2>风险与机会</h2>
+        <div class="callout risk" id="riskText"></div>
+      </section>
+
+      <section class="panel">
+        <h2>3 句汇报摘要</h2>
+        <ol class="summary" id="summary"></ol>
+      </section>
+
+      <section class="panel">
+        <h2>API 请求草案</h2>
+        <pre id="apiPlan"></pre>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const templates = {
+      "城市更新踏勘": {
+        poiCount: 38,
+        points: [
+          ["片区主要到达口", "判断外部交通进入是否顺畅", "公交/地铁/停车接驳、导视、首屏界面", "入口全景、导视缺口"],
+          ["历史建筑活化节点", "判断风貌资源是否转化为公共价值", "业态、开放性、维护状态、游客停留", "建筑立面、首层界面"],
+          ["核心商业街巷", "判断消费活力和街巷连续性", "空置率、店铺类型、人流停留、遮阴", "连续街景、典型店铺"],
+          ["公共空间/公园界面", "判断休憩与慢行体验", "座椅、绿化、无障碍、亲子/老人使用", "节点使用状态"],
+          ["社区服务设施", "判断居民生活便利度", "社区服务、菜场、医院、学校距离", "服务设施入口"],
+          ["夜间安全节点", "判断照明和安全支撑", "路灯、便利店、派出所、盲区、施工围挡", "夜间风险点位"]
+        ],
+        risk: "机会：历史风貌、步行尺度和复合业态有转化潜力。风险：如果慢行连续性、夜间照明、公共服务和停车组织不足，片区容易停留时间短、消费转化弱。建议现场优先补充人流时段、空置率和夜间安全证据。",
+        summary: [
+          "片区具备历史风貌和步行体验基础，但需要核实现状业态连续性和停留质量。",
+          "交通到达、慢行组织和公共服务是决定更新效果的关键约束。",
+          "下一步应补充夜间安全、停车组织、空置店铺和游客停留行为的现场证据。"
+        ]
+      },
+      "商业选址调研": {
+        poiCount: 46,
+        points: [
+          ["主交通入口", "判断客流进入效率", "站点距离、停车便利、过街成本", "入口人流"],
+          ["竞品聚集区", "判断市场密度", "同类品牌、价格带、排队情况", "竞品门头"],
+          ["午晚高峰节点", "判断消费峰值", "人流方向、停留、外卖骑手密度", "高峰状态"],
+          ["社区/办公界面", "判断稳定客群", "居民、办公、学校、酒店分布", "客群来源"],
+          ["潜在铺位", "判断可见性和进入性", "门宽、层高、转角、遮挡", "铺位界面"],
+          ["风险节点", "判断经营阻力", "施工、空置、噪声、交通割裂", "风险证据"]
+        ],
+        risk: "机会：若交通入口、稳定客群和竞品外溢同时存在，适合进入候选。风险：只看地图热度不看过街成本和铺位可见性，会高估真实客流。",
+        summary: [
+          "该片区选址价值取决于交通入口、稳定客群和竞品外溢三者是否叠加。",
+          "现场需重点核实午晚高峰人流方向、过街成本和铺位可见性。",
+          "建议先形成 2-3 个候选铺位，再用租金和转化假设做二次筛选。"
+        ]
+      }
+    };
+
+    function render() {
+      const area = document.getElementById("area").value || "目标片区";
+      const type = document.getElementById("type").value;
+      const time = document.getElementById("time").value;
+      const mode = document.getElementById("mode").value;
+      const data = templates[type] || templates["城市更新踏勘"];
+      document.getElementById("routeTitle").textContent = `${area} · ${time}${mode}踏勘`;
+      document.getElementById("judgement").textContent = `任务判断：这是一次${type}任务，路线由“地点定位 - 周边 POI - 路线规划 - 观察清单 - 汇报摘要”五步生成。`;
+      document.getElementById("routeRows").innerHTML = data.points.map((p, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${p[0]}</td>
+          <td>${p[1]}</td>
+          <td>${p[2]}</td>
+          <td>${p[3]}</td>
+        </tr>
+      `).join("");
+      document.getElementById("riskText").textContent = data.risk;
+      document.getElementById("summary").innerHTML = data.summary.map(item => `<li>${item}</li>`).join("");
+      document.getElementById("metricStops").textContent = data.points.length;
+      document.getElementById("metricTime").textContent = Number.parseInt(time, 10);
+      document.getElementById("metricPois").textContent = data.poiCount || 36;
+      document.getElementById("metricEvidence").textContent = data.points.length * 3;
+      renderApiPlan();
+    }
+
+    function renderApiPlan() {
+      const area = document.getElementById("area").value || "目标片区";
+      const type = document.getElementById("type").value;
+      const mode = document.getElementById("mode").value;
+      const realApi = document.getElementById("realApi").checked;
+      const payload = {
+        mode: realApi ? "real-amap-api-ready" : "mock-demo",
+        note: realApi ? "需要 Frank 提供高德 Web 服务 Key；Key 不应写入公开仓库。" : "当前演示不需要 API Key，使用内置示例数据。",
+        task: { area, type, travelMode: mode },
+        amapCalls: [
+          { api: "Geocoding API", purpose: "片区名称转经纬度", params: { address: area, key: "AMAP_WEB_SERVICE_KEY" } },
+          { api: "Around Search API", purpose: "检索周边 POI", params: { location: "lng,lat", radius: 1500, keywords: "交通|商业|公园|学校|医院|派出所|停车场" } },
+          { api: "Direction API", purpose: "生成步行/驾车/公交路线", params: { origin: "stop_1", destination: "stop_n", strategy: mode } },
+          { api: "JSAPI 2.0", purpose: "展示路线和点位", params: { plugins: ["AMap.Geocoder", "AMap.PlaceSearch", "AMap.Walking"] } }
+        ]
+      };
+      document.getElementById("apiPlan").textContent = JSON.stringify(payload, null, 2);
+    }
+
+    function exportSummary() {
+      const area = document.getElementById("area").value || "目标片区";
+      const type = document.getElementById("type").value;
+      const rows = [...document.querySelectorAll("#routeRows tr")].map(row => [...row.children].map(cell => cell.textContent.trim()));
+      const summary = [...document.querySelectorAll("#summary li")].map(item => item.textContent.trim());
+      const text = [
+        `# 城市踏勘官 CityScout Demo 摘要`,
+        ``,
+        `片区：${area}`,
+        `任务：${type}`,
+        ``,
+        `## 推荐点位`,
+        ...rows.map(r => `${r[0]}. ${r[1]}：${r[2]}；观察 ${r[3]}；拍照 ${r[4]}`),
+        ``,
+        `## 汇报摘要`,
+        ...summary.map((s, i) => `${i + 1}. ${s}`)
+      ].join("\n");
+      navigator.clipboard?.writeText(text);
+      alert("已生成提交摘要并尝试复制到剪贴板。");
+    }
+
+    document.getElementById("generate").addEventListener("click", render);
+    document.getElementById("realApi").addEventListener("change", renderApiPlan);
+    document.getElementById("export").addEventListener("click", exportSummary);
+    render();
+  </script>
+</body>
+</html>
