@@ -49,6 +49,32 @@ demo/index.html
 
 当前 Demo 使用示例数据模拟高德 API 返回结果。正式接入时，可将示例数据替换为高德 Web 服务 API 和 JSAPI 的实时结果。
 
+## 真实 API 试跑
+
+本仓库已完成一次本地高德 Web 服务 API 最小链路验证：
+
+- 地理编码 API：片区名称转坐标。
+- 周边 POI 搜索 API：获取候选踏勘点。
+- 步行路线规划 API：验证点位之间的可达性。
+
+试跑报告见：
+
+```text
+submission/real_api_run_report.md
+```
+
+真实 Key 仅保存在本地 `.env`，不会提交到 GitHub 或 ClawHub。公开仓库只保留 `.env.example`。
+
+本次试跑也暴露了一个真实地图产品必须处理的问题：片区名称可能被地理编码到近似地点，因此 Skill 输出会区分“地图证据、推断、待现场核实”，避免把接口结果直接包装成规划结论。
+
+本地复验命令：
+
+```bash
+cp .env.example .env
+# 填写 AMAP_WEB_SERVICE_KEY 后运行
+node scripts/test_amap_web_service.mjs
+```
+
 ## SkillZone
 
 高德开放平台 SkillZone：

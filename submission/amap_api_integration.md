@@ -6,6 +6,36 @@
 - 不会把 Frank 的高德 Key 暴露到公开仓库。
 - 评委能看懂产品形态和接口链路。
 
+## 已完成的真实试跑
+
+本作品已经完成一次本地 Web 服务 API 最小链路验证：
+
+- 地理编码 API：成功
+- 周边 POI 搜索 API：成功
+- 步行路线规划 API：成功
+
+脱敏报告：
+
+```text
+submission/real_api_run_report.md
+```
+
+复验脚本：
+
+```text
+scripts/test_amap_web_service.mjs
+```
+
+运行方式：
+
+```bash
+cp .env.example .env
+# 填写 AMAP_WEB_SERVICE_KEY
+node scripts/test_amap_web_service.mjs
+```
+
+注意：本次试跑中，片区名称“福州烟台山历史风貌区”被高德地理编码返回为近似历史风貌区坐标。这不是失败，而是地图智能产品的真实边界：地址/片区识别需要结合候选结果、行政区、人工确认或二次检索。CityScout 因此在输出中明确区分“地图证据、推断、待现场核实”。
+
 ## 什么时候需要真实 API Key
 
 需要以下任一目标时，再接入真实高德 API：

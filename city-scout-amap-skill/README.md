@@ -44,3 +44,14 @@ demo/index.html
 ```text
 submission/amap_api_integration.md
 ```
+
+## 真实 API 验证
+
+根仓库已提供本地验证脚本和脱敏试跑报告：
+
+```text
+scripts/test_amap_web_service.mjs
+submission/real_api_run_report.md
+```
+
+已验证链路包括：地理编码、周边 POI 搜索、步行路线规划。真实 Key 仅放在本地 `.env`，不进入公开仓库。
