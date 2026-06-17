@@ -57,6 +57,11 @@ demo/index.html
 https://lbs.amap.com/ai/skillzone
 ```
 
+## Published Links
+
+- GitHub: https://github.com/kue0000/city-scout-amap-skill
+- ClawHub: https://clawhub.ai/kue0000/city-scout-amap-skill
+
 ## 示例输入
 
 ```text

@@ -28,11 +28,9 @@
 
 ## GitHub / ClawHub 公开仓库地址
 
-待发布后填写：
+GitHub: https://github.com/kue0000/city-scout-amap-skill
 
-GitHub:
-
-ClawHub:
+ClawHub: https://clawhub.ai/kue0000/city-scout-amap-skill
 
 ## 作品分享至外站链接
 

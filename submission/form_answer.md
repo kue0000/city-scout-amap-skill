@@ -44,10 +44,10 @@
 
 ## GitHub / ClawHub 公开仓库地址
 
-待发布：
+已发布：
 
-- GitHub: 待创建公开仓库
-- ClawHub: 待发布 Skill 页面
+- GitHub: https://github.com/kue0000/city-scout-amap-skill
+- ClawHub: https://clawhub.ai/kue0000/city-scout-amap-skill
 
 建议仓库名：
 

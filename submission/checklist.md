@@ -12,8 +12,8 @@
 
 ## 选填但建议提交
 
-- [ ] GitHub 公开仓库地址
-- [ ] ClawHub 公开页面地址
+- [x] GitHub 公开仓库地址
+- [x] ClawHub 公开页面地址
 - [x] Demo 演示：上传或录屏 `demo/index.html`
 - [ ] 外站分享链接
 
@@ -28,7 +28,7 @@
 - [x] 有传播文章草稿
 - [x] 有 GitHub README
 - [x] 有 ClawHub/GitHub 发布用 Skill 包
-- [ ] 有 ClawHub 发布页
+- [x] 有 ClawHub 发布页
 - [ ] 有截图或演示视频
 
 ## 仍需 Frank 填写或确认
