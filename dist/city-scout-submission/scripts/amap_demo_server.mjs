@@ -90,6 +90,11 @@ async function handleCityScout(req, res) {
     walkingUrl.searchParams.set("key", key);
     const walking = await getAmapJson(walkingUrl);
     const firstPath = walking.route?.paths?.[0] || {};
+    const routeLine = (firstPath.steps || [])
+      .flatMap((step) => String(step.polyline || "").split(";"))
+      .filter(Boolean)
+      .map((point) => point.split(",").map(Number))
+      .filter((point) => point.length === 2 && point.every(Number.isFinite));
 
     sendJson(res, 200, {
       ok: true,
@@ -105,7 +110,8 @@ async function handleCityScout(req, res) {
         origin: pois[0].name,
         destination: pois[1].name,
         distanceMeters: firstPath.distance || "",
-        durationSeconds: firstPath.duration || ""
+        durationSeconds: firstPath.duration || "",
+        line: routeLine
       },
       boundaryNote: "地理编码可能返回近似地点，正式踏勘前应人工核验片区坐标和候选点。"
     });
@@ -115,6 +121,23 @@ async function handleCityScout(req, res) {
       error: error instanceof Error ? error.message : String(error)
     });
   }
+}
+
+function handleAmapJsConfig(res) {
+  const env = readDotEnv(path.join(rootDir, ".env"));
+  const key = env.AMAP_JSAPI_KEY;
+  const securityJsCode = env.AMAP_JSAPI_SECURITY_CODE;
+  if (!key || key.startsWith("replace_with")) {
+    return sendJson(res, 400, {
+      ok: false,
+      error: "AMAP_JSAPI_KEY is missing in local .env"
+    });
+  }
+  sendJson(res, 200, {
+    ok: true,
+    key,
+    securityJsCode: securityJsCode && !securityJsCode.startsWith("replace_with") ? securityJsCode : ""
+  });
 }
 
 function serveStatic(req, res) {
@@ -149,6 +172,10 @@ function serveStatic(req, res) {
 const server = http.createServer((req, res) => {
   if (req.url?.startsWith("/api/city-scout")) {
     handleCityScout(req, res);
+    return;
+  }
+  if (req.url?.startsWith("/api/amap-js-config")) {
+    handleAmapJsConfig(res);
     return;
   }
   serveStatic(req, res);

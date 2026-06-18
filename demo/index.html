@@ -149,9 +149,28 @@
       position: relative;
       overflow: hidden;
     }
+    #amapCanvas {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s ease;
+      z-index: 1;
+    }
+    .map.real-map #amapCanvas {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .map.real-map .route,
+    .map.real-map .pin,
+    .map.real-map .legend {
+      opacity: 0;
+      pointer-events: none;
+    }
     .route {
       position: absolute;
       inset: 34px 42px;
+      z-index: 2;
     }
     .route svg {
       width: 100%;
@@ -171,6 +190,7 @@
       border: 3px solid #fff;
       box-shadow: 0 4px 12px rgba(0,0,0,.18);
       transform: translate(-50%, -50%);
+      z-index: 3;
     }
     .legend {
       position: absolute;
@@ -182,6 +202,7 @@
       padding: 8px 10px;
       font-size: 13px;
       color: var(--muted);
+      z-index: 4;
     }
     h2 {
       margin: 0 0 12px;
@@ -378,7 +399,8 @@
     </section>
 
     <section class="stack">
-      <div class="map" aria-label="路线示意图">
+      <div class="map" id="mapPanel" aria-label="路线示意图">
+        <div id="amapCanvas" aria-label="真实高德地图"></div>
         <div class="route">
           <svg viewBox="0 0 600 260" role="img" aria-label="现场踏勘路线">
             <path d="M45 210 C90 130, 150 160, 190 92 S300 62, 338 118 S440 190, 520 58" fill="none" stroke="#1769e0" stroke-width="8" stroke-linecap="round" stroke-dasharray="1 16"/>
@@ -518,6 +540,7 @@
       } else {
         latestRealData = null;
         renderRealData(null);
+        renderAmap(null);
         setApiStatus("示例数据。当前未调用真实高德 API。");
       }
       const data = templates[type] || templates["城市更新踏勘"];
@@ -546,6 +569,16 @@
       document.getElementById("apiStatus").innerHTML = `<strong>数据源：</strong>${message}`;
     }
 
+    async function readJsonResponse(response, label) {
+      const text = await response.text();
+      try {
+        return JSON.parse(text);
+      } catch {
+        const preview = text.slice(0, 80) || "空响应";
+        throw new Error(`${label} 未返回 JSON：${preview}。请确认当前页面由新版本地代理服务启动。`);
+      }
+    }
+
     async function loadRealAmapData(area) {
       const button = document.getElementById("generate");
       button.disabled = true;
@@ -554,21 +587,113 @@
       try {
         const url = `/api/city-scout?area=${encodeURIComponent(area)}&city=${encodeURIComponent("福州")}`;
         const response = await fetch(url, { headers: { accept: "application/json" } });
-        const payload = await response.json();
+        const payload = await readJsonResponse(response, "CityScout API");
         if (!response.ok || !payload.ok) {
           throw new Error(payload.error || `HTTP ${response.status}`);
         }
         latestRealData = payload;
         renderRealData(payload);
+        await renderAmap(payload);
         setApiStatus(`真实高德 Web 服务。坐标 ${payload.geocode.location}，POI ${payload.pois.length} 条，首段步行 ${payload.routeValidation.distanceMeters} 米。`);
       } catch (error) {
         latestRealData = null;
         renderRealData(null);
+        renderAmap(null);
         setApiStatus(`真实 API 调用失败：${error.message}。请确认使用本地 Node 代理打开页面，且 .env 中有 AMAP_WEB_SERVICE_KEY。`);
       } finally {
         button.disabled = false;
         button.textContent = "生成踏勘路线";
       }
+    }
+
+    let amapLoadPromise = null;
+    let amapMap = null;
+    let amapOverlays = [];
+
+    async function ensureAmapLoaded() {
+      if (window.AMap) return window.AMap;
+      if (amapLoadPromise) return amapLoadPromise;
+      amapLoadPromise = fetch("/api/amap-js-config", { headers: { accept: "application/json" } })
+        .then(async (response) => {
+          const config = await readJsonResponse(response, "AMap JSAPI 配置");
+          if (!response.ok || !config.ok) {
+            throw new Error(config.error || `HTTP ${response.status}`);
+          }
+          if (config.securityJsCode) {
+            window._AMapSecurityConfig = { securityJsCode: config.securityJsCode };
+          }
+          await new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = `https://webapi.amap.com/maps?v=2.0&key=${encodeURIComponent(config.key)}`;
+            script.async = true;
+            script.onload = resolve;
+            script.onerror = () => reject(new Error("高德 JSAPI 加载失败"));
+            document.head.appendChild(script);
+          });
+          return window.AMap;
+        });
+      return amapLoadPromise;
+    }
+
+    async function renderAmap(data) {
+      const panel = document.getElementById("mapPanel");
+      if (!data) {
+        panel.classList.remove("real-map");
+        return;
+      }
+      const AMap = await ensureAmapLoaded();
+      const center = data.geocode.location.split(",").map(Number);
+      if (!amapMap) {
+        amapMap = new AMap.Map("amapCanvas", {
+          zoom: 16,
+          center,
+          viewMode: "2D",
+          mapStyle: "amap://styles/normal"
+        });
+      } else {
+        amapMap.setCenter(center);
+      }
+      amapOverlays.forEach((overlay) => amapMap.remove(overlay));
+      amapOverlays = [];
+
+      const centerMarker = new AMap.Marker({
+        position: center,
+        title: data.area,
+        label: { content: "片区定位", direction: "top" }
+      });
+      amapMap.add(centerMarker);
+      amapOverlays.push(centerMarker);
+
+      data.pois.forEach((poi, index) => {
+        const position = poi.location.split(",").map(Number);
+        if (position.length !== 2 || position.some(Number.isNaN)) return;
+        const marker = new AMap.Marker({
+          position,
+          title: poi.name,
+          label: { content: `${index + 1}. ${poi.name}`, direction: "right" }
+        });
+        amapMap.add(marker);
+        amapOverlays.push(marker);
+      });
+
+      const line = data.routeValidation.line || [];
+      if (line.length >= 2) {
+        const polyline = new AMap.Polyline({
+          path: line,
+          strokeColor: "#1769e0",
+          strokeWeight: 7,
+          strokeOpacity: 0.9,
+          lineJoin: "round",
+          lineCap: "round"
+        });
+        amapMap.add(polyline);
+        amapOverlays.push(polyline);
+      }
+
+      if (amapOverlays.length) {
+        amapMap.setFitView(amapOverlays, false, [36, 36, 36, 36]);
+      }
+      panel.classList.add("real-map");
     }
 
     function renderRealData(data) {
@@ -604,7 +729,13 @@
           formattedAddress: latestRealData.geocode.formattedAddress,
           location: latestRealData.geocode.location,
           poiCount: latestRealData.pois.length,
-          routeValidation: latestRealData.routeValidation
+          routeValidation: {
+            origin: latestRealData.routeValidation.origin,
+            destination: latestRealData.routeValidation.destination,
+            distanceMeters: latestRealData.routeValidation.distanceMeters,
+            durationSeconds: latestRealData.routeValidation.durationSeconds,
+            linePoints: latestRealData.routeValidation.line?.length || 0
+          }
         } : null,
         amapCalls: [
           { api: "Geocoding API", purpose: "片区名称转经纬度", params: { address: area, key: "AMAP_WEB_SERVICE_KEY" } },
