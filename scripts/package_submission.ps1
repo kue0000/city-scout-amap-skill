@@ -21,7 +21,13 @@ Copy-Item -LiteralPath "submission\form_fields_1000.md" -Destination (Join-Path 
 Copy-Item -LiteralPath "submission\demo_script.md" -Destination (Join-Path $packageDir "demo_script.md") -Force
 Copy-Item -LiteralPath "submission\social_post.md" -Destination (Join-Path $packageDir "social_post.md") -Force
 Copy-Item -LiteralPath "submission\real_api_run_report.md" -Destination (Join-Path $packageDir "real_api_run_report.md") -Force
+Copy-Item -LiteralPath "submission\amap_api_integration.md" -Destination (Join-Path $packageDir "amap_api_integration.md") -Force
 Copy-Item -LiteralPath "README.md" -Destination (Join-Path $packageDir "README.md") -Force
+
+New-Item -ItemType Directory -Force -Path (Join-Path $packageDir "scripts") | Out-Null
+Copy-Item -LiteralPath "scripts\test_amap_web_service.mjs" -Destination (Join-Path $packageDir "scripts\test_amap_web_service.mjs") -Force
+Copy-Item -LiteralPath "scripts\amap_demo_server.mjs" -Destination (Join-Path $packageDir "scripts\amap_demo_server.mjs") -Force
+Copy-Item -LiteralPath ".env.example" -Destination (Join-Path $packageDir ".env.example") -Force
 
 New-Item -ItemType Directory -Force -Path (Join-Path $packageDir "demo") | Out-Null
 Copy-Item -LiteralPath "demo\index.html" -Destination (Join-Path $packageDir "demo\index.html") -Force

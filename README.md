@@ -47,7 +47,23 @@ city-scout-amap-skill/    # ClawHub/GitHub 发布用 Skill 包
 demo/index.html
 ```
 
-当前 Demo 使用示例数据模拟高德 API 返回结果。正式接入时，可将示例数据替换为高德 Web 服务 API 和 JSAPI 的实时结果。
+默认 Demo 使用示例数据模拟高德 API 返回结果，适合直接打开或上传报名表。
+
+如果要查看真实高德 Web 服务返回，可使用本地代理模式。真实 Key 只由本机 Node 服务读取，不进入浏览器页面和公开仓库：
+
+```bash
+cp .env.example .env
+# 填写 AMAP_WEB_SERVICE_KEY
+node scripts/amap_demo_server.mjs
+```
+
+然后打开：
+
+```text
+http://127.0.0.1:8766/demo/index.html
+```
+
+勾选“真实 API 接入模式”后，页面会展示真实地理编码、周边 POI 和步行路线验证结果。
 
 ## 真实 API 试跑
 
@@ -73,6 +89,12 @@ submission/real_api_run_report.md
 cp .env.example .env
 # 填写 AMAP_WEB_SERVICE_KEY 后运行
 node scripts/test_amap_web_service.mjs
+```
+
+本地可视化验证：
+
+```bash
+node scripts/amap_demo_server.mjs
 ```
 
 ## SkillZone

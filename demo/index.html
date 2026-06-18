@@ -104,6 +104,10 @@
       color: var(--blue);
       border: 1px solid #9fc0f3;
     }
+    button:disabled {
+      opacity: .62;
+      cursor: progress;
+    }
     .toggle {
       display: grid;
       grid-template-columns: 1fr;
@@ -221,6 +225,19 @@
       background: #fff;
       font-size: 13px;
       color: var(--muted);
+    }
+    .api-status {
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .api-status strong {
+      color: var(--ink);
     }
     table {
       width: 100%;
@@ -343,7 +360,11 @@
 
       <div class="toggle">
         <label><input id="realApi" type="checkbox">真实 API 接入模式</label>
-        <small>当前默认使用示例数据。勾选后会展示真实接入需要的高德 Key 与接口调用参数，但不会上传或保存任何密钥。</small>
+        <small>默认使用示例数据。通过本地 Node 代理打开时，勾选后会调用真实高德 Web 服务 API；Key 只在本机 `.env` 中读取，不进入浏览器和公开仓库。</small>
+      </div>
+
+      <div class="api-status" id="apiStatus">
+        <strong>数据源：</strong>示例数据。若要看真实高德返回，请使用 `node scripts/amap_demo_server.mjs` 启动本地代理后勾选真实 API。
       </div>
 
       <h3>高德能力调用</h3>
@@ -396,6 +417,22 @@
           <div class="flow-step"><strong>4 Direction</strong><span>按时间预算和出行方式组织路线。</span></div>
           <div class="flow-step"><strong>5 Skill Output</strong><span>生成观察清单、拍照点和汇报摘要。</span></div>
         </div>
+      </section>
+
+      <section class="panel" id="realDataPanel" hidden>
+        <h2>真实高德返回</h2>
+        <div class="callout" id="realDataSummary"></div>
+        <h3>POI 样例</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>名称</th>
+              <th>类型</th>
+              <th>地址</th>
+            </tr>
+          </thead>
+          <tbody id="realPoiRows"></tbody>
+        </table>
       </section>
 
       <section class="panel">
@@ -469,14 +506,24 @@
       }
     };
 
-    function render() {
+    let latestRealData = null;
+
+    async function render() {
       const area = document.getElementById("area").value || "目标片区";
       const type = document.getElementById("type").value;
       const time = document.getElementById("time").value;
       const mode = document.getElementById("mode").value;
+      if (document.getElementById("realApi").checked) {
+        await loadRealAmapData(area);
+      } else {
+        latestRealData = null;
+        renderRealData(null);
+        setApiStatus("示例数据。当前未调用真实高德 API。");
+      }
       const data = templates[type] || templates["城市更新踏勘"];
       document.getElementById("routeTitle").textContent = `${area} · ${time}${mode}踏勘`;
-      document.getElementById("judgement").textContent = `任务判断：这是一次${type}任务，路线由“地点定位 - 周边 POI - 路线规划 - 观察清单 - 汇报摘要”五步生成。`;
+      const sourceText = latestRealData ? "真实高德 Web 服务返回 + Skill 观察模板" : "示例数据 + Skill 观察模板";
+      document.getElementById("judgement").textContent = `任务判断：这是一次${type}任务，路线由“地点定位 - 周边 POI - 路线规划 - 观察清单 - 汇报摘要”五步生成。数据源：${sourceText}。`;
       document.getElementById("routeRows").innerHTML = data.points.map((p, index) => `
         <tr>
           <td>${index + 1}</td>
@@ -490,9 +537,58 @@
       document.getElementById("summary").innerHTML = data.summary.map(item => `<li>${item}</li>`).join("");
       document.getElementById("metricStops").textContent = data.points.length;
       document.getElementById("metricTime").textContent = Number.parseInt(time, 10);
-      document.getElementById("metricPois").textContent = data.poiCount || 36;
+      document.getElementById("metricPois").textContent = latestRealData?.pois?.length || data.poiCount || 36;
       document.getElementById("metricEvidence").textContent = data.points.length * 3;
       renderApiPlan();
+    }
+
+    function setApiStatus(message) {
+      document.getElementById("apiStatus").innerHTML = `<strong>数据源：</strong>${message}`;
+    }
+
+    async function loadRealAmapData(area) {
+      const button = document.getElementById("generate");
+      button.disabled = true;
+      button.textContent = "正在调用高德 API...";
+      setApiStatus("正在通过本地代理调用高德 Web 服务 API...");
+      try {
+        const url = `/api/city-scout?area=${encodeURIComponent(area)}&city=${encodeURIComponent("福州")}`;
+        const response = await fetch(url, { headers: { accept: "application/json" } });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) {
+          throw new Error(payload.error || `HTTP ${response.status}`);
+        }
+        latestRealData = payload;
+        renderRealData(payload);
+        setApiStatus(`真实高德 Web 服务。坐标 ${payload.geocode.location}，POI ${payload.pois.length} 条，首段步行 ${payload.routeValidation.distanceMeters} 米。`);
+      } catch (error) {
+        latestRealData = null;
+        renderRealData(null);
+        setApiStatus(`真实 API 调用失败：${error.message}。请确认使用本地 Node 代理打开页面，且 .env 中有 AMAP_WEB_SERVICE_KEY。`);
+      } finally {
+        button.disabled = false;
+        button.textContent = "生成踏勘路线";
+      }
+    }
+
+    function renderRealData(data) {
+      const panel = document.getElementById("realDataPanel");
+      if (!data) {
+        panel.hidden = true;
+        document.getElementById("realPoiRows").innerHTML = "";
+        document.getElementById("realDataSummary").textContent = "";
+        return;
+      }
+      panel.hidden = false;
+      document.getElementById("realDataSummary").textContent =
+        `地理编码返回：${data.geocode.formattedAddress}（${data.geocode.location}）。首段路线：${data.routeValidation.origin} 到 ${data.routeValidation.destination}，${data.routeValidation.distanceMeters} 米，约 ${data.routeValidation.durationSeconds} 秒。提示：${data.boundaryNote}`;
+      document.getElementById("realPoiRows").innerHTML = data.pois.map((poi) => `
+        <tr>
+          <td>${poi.name}</td>
+          <td>${poi.type}</td>
+          <td>${poi.address || "未返回"}</td>
+        </tr>
+      `).join("");
     }
 
     function renderApiPlan() {
@@ -501,9 +597,15 @@
       const mode = document.getElementById("mode").value;
       const realApi = document.getElementById("realApi").checked;
       const payload = {
-        mode: realApi ? "real-amap-api-ready" : "mock-demo",
-        note: realApi ? "需要 Frank 提供高德 Web 服务 Key；Key 不应写入公开仓库。" : "当前演示不需要 API Key，使用内置示例数据。",
+        mode: realApi ? "real-amap-web-service-via-local-proxy" : "mock-demo",
+        note: realApi ? "本地代理从 .env 读取 Key 并调用高德 Web 服务，浏览器和公开仓库不保存密钥。" : "当前演示不需要 API Key，使用内置示例数据。",
         task: { area, type, travelMode: mode },
+        realResult: latestRealData ? {
+          formattedAddress: latestRealData.geocode.formattedAddress,
+          location: latestRealData.geocode.location,
+          poiCount: latestRealData.pois.length,
+          routeValidation: latestRealData.routeValidation
+        } : null,
         amapCalls: [
           { api: "Geocoding API", purpose: "片区名称转经纬度", params: { address: area, key: "AMAP_WEB_SERVICE_KEY" } },
           { api: "Around Search API", purpose: "检索周边 POI", params: { location: "lng,lat", radius: 1500, keywords: "交通|商业|公园|学校|医院|派出所|停车场" } },
@@ -535,8 +637,8 @@
       alert("已生成提交摘要并尝试复制到剪贴板。");
     }
 
-    document.getElementById("generate").addEventListener("click", render);
-    document.getElementById("realApi").addEventListener("change", renderApiPlan);
+    document.getElementById("generate").addEventListener("click", () => { render(); });
+    document.getElementById("realApi").addEventListener("change", () => { render(); });
     document.getElementById("export").addEventListener("click", exportSummary);
     render();
   </script>
