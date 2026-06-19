@@ -1,9 +1,9 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>城市踏勘官 CityScout Demo</title>
+  <title>城市踏勘官 CityScout Demo | 唤醒城市沉睡的基因</title>
   <style>
     :root {
       --ink: #17202a;
@@ -337,7 +337,7 @@
 <body>
   <header>
     <h1>城市踏勘官 CityScout</h1>
-    <div class="subtitle">输入片区、任务类型和时间预算，生成可执行的现场踏勘路线、观察清单、风险点、拍照建议和汇报摘要。Demo 展示的是产品形态，正式版可接入高德 Web API 与 JSAPI。</div>
+    <div class="subtitle">唤醒城市沉睡的基因。输入片区、任务类型和时间预算，CityScout 会用高德地图能力把街巷、设施、路径和公共空间里的线索，转化成可执行的现场证据路线、观察清单和汇报摘要。</div>
     <div class="topline">
       <span>高德开放平台 Skill 创意征集赛</span>
       <a href="https://lbs.amap.com/ai/skillzone" target="_blank" rel="noreferrer">SkillZone</a>
@@ -417,7 +417,7 @@
 
       <section class="panel">
         <h2 id="routeTitle">福州烟台山历史风貌区 · 90 分钟步行踏勘</h2>
-        <div class="callout" id="judgement">任务判断：这是一次城市更新前期踏勘，重点不是游玩打卡，而是验证片区入口、历史建筑利用、商业连续性、慢行体验、公共服务和夜间安全。</div>
+        <div class="callout" id="judgement">任务判断：这是一次城市更新前期踏勘，重点不是游玩打卡，而是用地图线索唤醒片区入口、历史建筑、商业连续性、慢行体验、公共服务和夜间安全里的城市基因。</div>
       </section>
 
       <section class="panel">
@@ -546,7 +546,7 @@
       const data = templates[type] || templates["城市更新踏勘"];
       document.getElementById("routeTitle").textContent = `${area} · ${time}${mode}踏勘`;
       const sourceText = latestRealData ? "真实高德 Web 服务返回 + Skill 观察模板" : "示例数据 + Skill 观察模板";
-      document.getElementById("judgement").textContent = `任务判断：这是一次${type}任务，路线由“地点定位 - 周边 POI - 路线规划 - 观察清单 - 汇报摘要”五步生成。数据源：${sourceText}。`;
+      document.getElementById("judgement").textContent = `任务判断：这是一次${type}任务。CityScout 用“地点定位 - 周边 POI - 路线规划 - 观察清单 - 汇报摘要”五步，把城市里沉睡的线索转化为可现场验证的证据路线。数据源：${sourceText}。`;
       document.getElementById("routeRows").innerHTML = data.points.map((p, index) => `
         <tr>
           <td>${index + 1}</td>
@@ -755,6 +755,8 @@
       const text = [
         `# 城市踏勘官 CityScout Demo 摘要`,
         ``,
+        `核心概念：唤醒城市沉睡的基因`,
+        ``,
         `片区：${area}`,
         `任务：${type}`,
         ``,
@@ -775,3 +777,4 @@
   </script>
 </body>
 </html>
+

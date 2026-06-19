@@ -1,9 +1,13 @@
----
+﻿---
 name: city-scout
-description: "城市踏勘官 CityScout：把城市片区、任务目标和时间预算转成可执行的踏勘路线、观察清单、风险点和汇报摘要。适用于城市更新、商业选址、文旅动线、街区活力评估等需要地图能力和现场判断结合的任务。"
+description: "城市踏勘官 CityScout：唤醒城市沉睡的基因。把城市片区、任务目标和时间预算转成可执行的现场证据路线、观察清单、风险点和汇报摘要。适用于城市更新、商业选址、文旅动线、街区活力评估等需要地图能力和现场判断结合的任务。"
 ---
 
 # 城市踏勘官 CityScout
+
+Core concept: awaken the sleeping genes of a city.
+
+CityScout is not a generic travel or citywalk recommendation skill. It uses map evidence to help the user discover overlooked urban clues, turn them into a route, and verify them through field observation.
 
 ## When To Use
 
@@ -23,7 +27,7 @@ Typical Chinese triggers:
 
 ## Goal
 
-Turn a vague location-based task into a practical fieldwork package:
+Turn a vague location-based task into a practical fieldwork evidence package:
 
 - a route with ordered stops
 - the reason each stop matters
@@ -32,6 +36,8 @@ Turn a vague location-based task into a practical fieldwork package:
 - risk and opportunity notes
 - photo checklist
 - short reporting summary
+
+The narrative goal is to help the user walk into the city with a question, awaken hidden clues in streets, facilities, routes, and public spaces, and convert those clues into evidence for a city judgment.
 
 ## Required Inputs
 
@@ -126,3 +132,4 @@ Use this structure:
 ## Example Output Summary
 
 城市踏勘官会先定位烟台山片区，再围绕入口交通、核心街巷、商业节点、历史建筑、公园界面、社区服务和安全节点组织 6-8 个点位，形成一条 90 分钟步行路线。输出不只是路线，还包括每个点位该看什么、拍什么、怎么判断机会和风险，以及可以直接放进会议材料的简短汇报。
+
