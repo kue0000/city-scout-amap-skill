@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$OutputDir = "dist"
 )
 
@@ -20,6 +20,7 @@ Copy-Item -LiteralPath "submission\tutorial.md" -Destination (Join-Path $package
 Copy-Item -LiteralPath "submission\form_fields_1000.md" -Destination (Join-Path $packageDir "form_fields_1000.md") -Force
 Copy-Item -LiteralPath "submission\demo_script.md" -Destination (Join-Path $packageDir "demo_script.md") -Force
 Copy-Item -LiteralPath "submission\social_post.md" -Destination (Join-Path $packageDir "social_post.md") -Force
+Copy-Item -LiteralPath "submission\promotion_mvp_pack.md" -Destination (Join-Path $packageDir "promotion_mvp_pack.md") -Force
 Copy-Item -LiteralPath "submission\real_api_run_report.md" -Destination (Join-Path $packageDir "real_api_run_report.md") -Force
 Copy-Item -LiteralPath "submission\amap_api_integration.md" -Destination (Join-Path $packageDir "amap_api_integration.md") -Force
 Copy-Item -LiteralPath "README.md" -Destination (Join-Path $packageDir "README.md") -Force
@@ -47,3 +48,5 @@ Get-ChildItem -LiteralPath $packageDir -Recurse -File |
 
 Write-Host ""
 Write-Host "Created: $zipPath"
+
+

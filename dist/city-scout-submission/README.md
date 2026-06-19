@@ -38,6 +38,7 @@ submission/skill.md       # 可上传的 Skill 文件
 submission/tutorial.md    # 使用教程
 submission/form_answer.md # 报名表填写稿
 submission/social_post.md # 外站传播稿
+submission/promotion_mvp_pack.md # 传播与 MVP 推进包
 submission/amap_api_integration.md # 真实高德 API 接入说明
 demo/index.html           # 本地静态 Demo
 city-scout-amap-skill/    # ClawHub/GitHub 发布用 Skill 包
@@ -136,6 +137,8 @@ https://lbs.amap.com/ai/skillzone
 ## 原创声明
 
 本作品为原创 Skill 设计，未在其他赛事中获奖，未公开发表或商业化。
+
+
 
 
 
