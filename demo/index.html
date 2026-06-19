@@ -376,7 +376,7 @@
         <option>公交</option>
       </select>
 
-      <button id="generate">生成踏勘路线</button>
+      <button id="generate">生成证据路线</button>
       <button id="export" class="secondary" type="button">导出提交摘要</button>
 
       <div class="toggle">
@@ -402,7 +402,7 @@
       <div class="map" id="mapPanel" aria-label="路线示意图">
         <div id="amapCanvas" aria-label="真实高德地图"></div>
         <div class="route">
-          <svg viewBox="0 0 600 260" role="img" aria-label="现场踏勘路线">
+          <svg viewBox="0 0 600 260" role="img" aria-label="现场证据路线">
             <path d="M45 210 C90 130, 150 160, 190 92 S300 62, 338 118 S440 190, 520 58" fill="none" stroke="#1769e0" stroke-width="8" stroke-linecap="round" stroke-dasharray="1 16"/>
           </svg>
         </div>
@@ -458,7 +458,7 @@
       </section>
 
       <section class="panel">
-        <h2>推荐路线与观察清单</h2>
+        <h2>证据路线与观察清单</h2>
         <table>
           <thead>
             <tr>
@@ -582,7 +582,7 @@
     async function loadRealAmapData(area) {
       const button = document.getElementById("generate");
       button.disabled = true;
-      button.textContent = "正在调用高德 API...";
+      button.textContent = "正在唤醒城市线索...";
       setApiStatus("正在通过本地代理调用高德 Web 服务 API...");
       try {
         const url = `/api/city-scout?area=${encodeURIComponent(area)}&city=${encodeURIComponent("福州")}`;
@@ -602,7 +602,7 @@
         setApiStatus(`真实 API 调用失败：${error.message}。请确认使用本地 Node 代理打开页面，且 .env 中有 AMAP_WEB_SERVICE_KEY。`);
       } finally {
         button.disabled = false;
-        button.textContent = "生成踏勘路线";
+        button.textContent = "生成证据路线";
       }
     }
 
@@ -777,4 +777,6 @@
   </script>
 </body>
 </html>
+
+
 

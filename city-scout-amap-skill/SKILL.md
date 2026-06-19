@@ -96,13 +96,13 @@ If API access is unavailable, produce a transparent mock route and label it as a
 Use this structure:
 
 ```markdown
-# 城市踏勘路线
+# 城市证据路线
 
 ## 任务判断
 
 ## 高德能力调用说明
 
-## 推荐路线
+## 证据路线
 
 | 顺序 | 点位 | 为什么去 | 现场观察 | 拍照建议 |
 |---:|---|---|---|---|
@@ -132,4 +132,5 @@ Use this structure:
 ## Example Output Summary
 
 城市踏勘官会先定位烟台山片区，再围绕入口交通、核心街巷、商业节点、历史建筑、公园界面、社区服务和安全节点组织 6-8 个点位，形成一条 90 分钟步行路线。输出不只是路线，还包括每个点位该看什么、拍什么、怎么判断机会和风险，以及可以直接放进会议材料的简短汇报。
+
 
