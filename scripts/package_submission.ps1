@@ -32,6 +32,7 @@ Copy-Item -LiteralPath ".env.example" -Destination (Join-Path $packageDir ".env.
 
 New-Item -ItemType Directory -Force -Path (Join-Path $packageDir "demo") | Out-Null
 Copy-Item -LiteralPath "demo\index.html" -Destination (Join-Path $packageDir "demo\index.html") -Force
+Copy-Item -LiteralPath "demo\scale.html" -Destination (Join-Path $packageDir "demo\scale.html") -Force
 
 New-Item -ItemType Directory -Force -Path (Join-Path $packageDir "city-scout-amap-skill") | Out-Null
 Copy-Item -LiteralPath "city-scout-amap-skill\*" -Destination (Join-Path $packageDir "city-scout-amap-skill") -Recurse -Force

@@ -51,6 +51,7 @@ submission/social_post.md # 外站传播稿
 submission/promotion_mvp_pack.md # 传播与 MVP 推进包
 submission/amap_api_integration.md # 真实高德 API 接入说明
 demo/index.html           # 本地静态 Demo
+demo/scale.html           # 当前最终状态 Scale Demo
 city-scout-amap-skill/    # ClawHub/GitHub 发布用 Skill 包
 ```
 
@@ -76,6 +77,12 @@ node scripts/amap_demo_server.mjs
 
 ```text
 http://127.0.0.1:8766/demo/index.html
+```
+
+查看当前最终状态看板：
+
+```text
+http://127.0.0.1:8766/demo/scale.html
 ```
 
 勾选“真实 API 接入模式”后，页面会展示真实地理编码、周边 POI 和步行路线验证结果。

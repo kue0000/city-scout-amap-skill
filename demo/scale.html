@@ -1,0 +1,252 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CityScout Scale Demo | 最终状态看板</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5d6875;
+      --line: #d8dee6;
+      --bg: #f4f7f8;
+      --panel: #ffffff;
+      --blue: #1769e0;
+      --green: #16805d;
+      --gold: #91650a;
+      --red: #b43b31;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
+    header { padding: 24px clamp(16px, 4vw, 48px); background: #fff; border-bottom: 1px solid var(--line); }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 44px); letter-spacing: 0; line-height: 1.08; }
+    .subtitle { color: var(--muted); line-height: 1.7; max-width: 980px; }
+    main { padding: 16px clamp(16px, 4vw, 48px) 36px; display: grid; gap: 16px; }
+    .grid { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 16px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
+    h2 { margin: 0 0 12px; font-size: 20px; letter-spacing: 0; }
+    h3 { margin: 16px 0 8px; font-size: 16px; letter-spacing: 0; }
+    p { line-height: 1.7; margin: 0 0 10px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .badge { border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; color: var(--muted); background: #fff; font-size: 13px; }
+    .status { display: grid; gap: 8px; }
+    .status-row { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 8px 0; }
+    .status-row span:first-child { color: var(--muted); }
+    .status-row strong { text-align: right; }
+    .ok { color: var(--green); }
+    .warn { color: var(--gold); }
+    .map { min-height: 360px; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; background: #eaf2ef; }
+    #mapCanvas { width: 100%; height: 360px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px 8px; text-align: left; vertical-align: top; }
+    th { color: var(--muted); background: #f8fafb; font-size: 13px; }
+    .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .card { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fff; min-height: 160px; }
+    .card strong { display: block; margin-bottom: 8px; }
+    ul { margin: 0; padding-left: 18px; line-height: 1.7; }
+    pre { margin: 0; padding: 12px; background: #13202b; color: #dbeafe; border-radius: 8px; overflow: auto; font-size: 12px; line-height: 1.55; }
+    .error { border-left: 4px solid var(--red); background: #fff4f2; padding: 12px; border-radius: 6px; }
+    @media (max-width: 900px) { .grid, .three { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CityScout Scale Demo</h1>
+    <div class="subtitle">当前最终状态看板：验证“唤醒城市沉睡的基因”这条叙事，是否已经被真实高德 API、地图证据、现场推断和待核实清单支撑起来。</div>
+    <div class="badges">
+      <span class="badge">真实高德 API</span>
+      <span class="badge">JSAPI 地图</span>
+      <span class="badge">现场证据路线</span>
+      <span class="badge">地图证据 / 现场推断 / 待核实</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="grid">
+      <div class="panel">
+        <h2>最终定位</h2>
+        <p><strong>城市踏勘官 CityScout</strong></p>
+        <p>不是推荐去哪玩，而是帮用户带着一个城市判断走进现场，唤醒沉睡在街巷、设施、路径和公共空间里的城市基因。</p>
+        <p>当前 Demo 用高德地理编码、周边 POI、步行路线规划和 JSAPI 地图，把故事落到真实地点和现场证据上。</p>
+        <h3>运行状态</h3>
+        <div class="status" id="statusRows"></div>
+      </div>
+      <div class="panel">
+        <h2>真实地图证据</h2>
+        <div class="map"><div id="mapCanvas"></div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>真实 API 返回摘要</h2>
+      <div id="apiSummary">正在读取本地代理...</div>
+    </section>
+
+    <section class="panel">
+      <h2>POI 线索样本</h2>
+      <table>
+        <thead><tr><th>序号</th><th>POI</th><th>类型</th><th>为什么是线索</th><th>地址</th></tr></thead>
+        <tbody id="poiRows"></tbody>
+      </table>
+    </section>
+
+    <section class="three">
+      <div class="card">
+        <strong>地图证据</strong>
+        <ul id="mapEvidence"></ul>
+      </div>
+      <div class="card">
+        <strong>现场推断</strong>
+        <ul id="fieldInference"></ul>
+      </div>
+      <div class="card">
+        <strong>待核实内容</strong>
+        <ul id="pendingVerification"></ul>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>当前 Skill 输出结构</h2>
+      <pre id="skillShape"></pre>
+    </section>
+  </main>
+
+  <script>
+    const state = {
+      area: "福州烟台山历史风貌区",
+      city: "福州"
+    };
+
+    function setStatus(rows) {
+      document.getElementById("statusRows").innerHTML = rows.map(([label, value, cls]) => `
+        <div class="status-row"><span>${label}</span><strong class="${cls || ""}">${value}</strong></div>
+      `).join("");
+    }
+
+    async function readJson(response, label) {
+      const text = await response.text();
+      try { return JSON.parse(text); } catch { throw new Error(`${label} 未返回 JSON：${text.slice(0, 80)}`); }
+    }
+
+    async function getConfig() {
+      const response = await fetch("/api/amap-js-config", { headers: { accept: "application/json" } });
+      const config = await readJson(response, "AMap JSAPI 配置");
+      if (!response.ok || !config.ok) throw new Error(config.error || `HTTP ${response.status}`);
+      return config;
+    }
+
+    async function loadAmap() {
+      if (window.AMap) return window.AMap;
+      const config = await getConfig();
+      if (config.securityJsCode) window._AMapSecurityConfig = { securityJsCode: config.securityJsCode };
+      await new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = `https://webapi.amap.com/maps?v=2.0&key=${encodeURIComponent(config.key)}`;
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error("高德 JSAPI 加载失败"));
+        document.head.appendChild(script);
+      });
+      return window.AMap;
+    }
+
+    function clueType(poi) {
+      const type = `${poi.type} ${poi.name}`;
+      if (/停车|公交|地铁|交通/.test(type)) return "进入性 / 可达性";
+      if (/医院|学校|社区|服务/.test(type)) return "公共服务支撑";
+      if (/公园|景区|文化|历史/.test(type)) return "公共空间 / 风貌资源";
+      if (/派出所|便利店|药店/.test(type)) return "安全与夜间支撑";
+      if (/商业|广场|购物|餐饮/.test(type)) return "商业活力";
+      return "城市线索";
+    }
+
+    async function main() {
+      setStatus([
+        ["本地代理", "读取中", "warn"],
+        ["真实高德 API", "待验证", "warn"],
+        ["JSAPI 地图", "待加载", "warn"],
+        ["Skill 结构", "已强化", "ok"]
+      ]);
+
+      const url = `/api/city-scout?area=${encodeURIComponent(state.area)}&city=${encodeURIComponent(state.city)}`;
+      const response = await fetch(url, { headers: { accept: "application/json" } });
+      const payload = await readJson(response, "CityScout API");
+      if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+
+      const AMap = await loadAmap();
+      const center = payload.geocode.location.split(",").map(Number);
+      const map = new AMap.Map("mapCanvas", { zoom: 16, center, viewMode: "2D" });
+      const overlays = [];
+      const centerMarker = new AMap.Marker({ position: center, title: payload.area, label: { content: "片区定位", direction: "top" } });
+      map.add(centerMarker);
+      overlays.push(centerMarker);
+      payload.pois.forEach((poi, index) => {
+        const position = poi.location.split(",").map(Number);
+        const marker = new AMap.Marker({ position, title: poi.name, label: { content: `${index + 1}. ${poi.name}`, direction: "right" } });
+        map.add(marker);
+        overlays.push(marker);
+      });
+      if (payload.routeValidation.line?.length >= 2) {
+        const polyline = new AMap.Polyline({ path: payload.routeValidation.line, strokeColor: "#1769e0", strokeWeight: 7, strokeOpacity: 0.9, lineJoin: "round", lineCap: "round" });
+        map.add(polyline);
+        overlays.push(polyline);
+      }
+      map.setFitView(overlays, false, [36, 36, 36, 36]);
+
+      setStatus([
+        ["本地代理", "正常", "ok"],
+        ["真实高德 API", "已返回", "ok"],
+        ["JSAPI 地图", "已渲染", "ok"],
+        ["路线点数", `${payload.routeValidation.line?.length || 0} 个`, "ok"]
+      ]);
+
+      document.getElementById("apiSummary").innerHTML = `
+        <p><strong>片区：</strong>${payload.area}</p>
+        <p><strong>地理编码：</strong>${payload.geocode.formattedAddress}（${payload.geocode.location}）</p>
+        <p><strong>首段步行验证：</strong>${payload.routeValidation.origin} → ${payload.routeValidation.destination}，${payload.routeValidation.distanceMeters} 米，约 ${payload.routeValidation.durationSeconds} 秒。</p>
+        <p><strong>边界提醒：</strong>${payload.boundaryNote}</p>
+      `;
+
+      document.getElementById("poiRows").innerHTML = payload.pois.map((poi, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${poi.name}</td>
+          <td>${poi.type}</td>
+          <td>${clueType(poi)}</td>
+          <td>${poi.address || "未返回"}</td>
+        </tr>
+      `).join("");
+
+      document.getElementById("mapEvidence").innerHTML = [
+        `地理编码坐标：${payload.geocode.location}`,
+        `周边 POI 样本：${payload.pois.length} 个`,
+        `首段路线距离：${payload.routeValidation.distanceMeters} 米`,
+        `JSAPI 地图已显示 POI 和路线`
+      ].map(item => `<li>${item}</li>`).join("");
+
+      document.getElementById("fieldInference").innerHTML = [
+        "停车场与入口节点密集，说明可达性和停车组织是关键议题。",
+        "公共服务、历史风貌和商业节点需要被串联，而不是被单点打卡。",
+        "当前片区存在被证据路线唤醒为城市更新叙事的潜力。"
+      ].map(item => `<li>${item}</li>`).join("");
+
+      document.getElementById("pendingVerification").innerHTML = [
+        "地理编码返回近似地点，需要现场或二次检索校准。",
+        "实际人流、空置率、夜间照明和停留行为需要现场照片补证。",
+        "POI 是否仍在营业、是否开放、是否可进入需要核实。"
+      ].map(item => `<li>${item}</li>`).join("");
+
+      document.getElementById("skillShape").textContent = JSON.stringify({
+        concept: "唤醒城市沉睡的基因",
+        outputSections: ["任务判断", "被唤醒的城市基因", "高德能力调用说明", "证据路线", "地图证据 / 现场推断 / 待核实", "风险与机会", "现场执行清单", "3 句汇报摘要", "下一步"],
+        qualityRule: "POI is clue, route is evidence route, conclusion must separate evidence/inference/uncertainty"
+      }, null, 2);
+    }
+
+    main().catch((error) => {
+      setStatus([["运行失败", error.message, "warn"]]);
+      document.getElementById("apiSummary").innerHTML = `<div class="error">${error.message}</div>`;
+    });
+  </script>
+</body>
+</html>
