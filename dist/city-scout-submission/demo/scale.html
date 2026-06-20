@@ -3,122 +3,278 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CityScout Scale Demo | 最终状态看板</title>
+  <title>CityScout Scale Demo | 唤醒城市沉睡的基因</title>
   <style>
     :root {
-      --ink: #17202a;
-      --muted: #5d6875;
-      --line: #d8dee6;
-      --bg: #f4f7f8;
+      --ink: #142126;
+      --muted: #5c6872;
+      --soft: #eef3f1;
       --panel: #ffffff;
+      --line: #dce4e1;
       --blue: #1769e0;
-      --green: #16805d;
-      --gold: #91650a;
-      --red: #b43b31;
+      --jade: #12805c;
+      --amber: #a56a00;
+      --rose: #b94135;
+      --violet: #6656c9;
+      --shadow: 0 18px 50px rgba(20, 33, 38, .10);
+      --radius: 8px;
     }
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
-    header { padding: 24px clamp(16px, 4vw, 48px); background: #fff; border-bottom: 1px solid var(--line); }
-    h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 44px); letter-spacing: 0; line-height: 1.08; }
-    .subtitle { color: var(--muted); line-height: 1.7; max-width: 980px; }
-    main { padding: 16px clamp(16px, 4vw, 48px) 36px; display: grid; gap: 16px; }
-    .grid { display: grid; grid-template-columns: minmax(280px, 420px) 1fr; gap: 16px; }
-    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; }
-    h2 { margin: 0 0 12px; font-size: 20px; letter-spacing: 0; }
-    h3 { margin: 16px 0 8px; font-size: 16px; letter-spacing: 0; }
-    p { line-height: 1.7; margin: 0 0 10px; }
-    .badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-    .badge { border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; color: var(--muted); background: #fff; font-size: 13px; }
-    .status { display: grid; gap: 8px; }
-    .status-row { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); padding: 8px 0; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 14% 0%, rgba(18, 128, 92, .14), transparent 30%),
+        radial-gradient(circle at 92% 8%, rgba(23, 105, 224, .12), transparent 32%),
+        linear-gradient(180deg, #f8faf9 0%, #edf3f1 100%);
+    }
+    .app-shell { min-height: 100vh; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px clamp(18px, 4vw, 48px);
+      border-bottom: 1px solid rgba(220, 228, 225, .86);
+      background: rgba(255, 255, 255, .82);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--jade), var(--blue));
+      box-shadow: 0 10px 26px rgba(23, 105, 224, .22);
+      flex: 0 0 auto;
+    }
+    .brand strong { display: block; font-size: 15px; }
+    .brand span { display: block; color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .top-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .chip.ok { color: var(--jade); border-color: rgba(18, 128, 92, .24); background: rgba(18, 128, 92, .08); }
+    .hero {
+      padding: 26px clamp(18px, 4vw, 48px) 14px;
+      display: grid;
+      grid-template-columns: minmax(320px, 1.02fr) minmax(360px, 1fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+    .hero-copy {
+      border: 1px solid rgba(220, 228, 225, .88);
+      border-radius: var(--radius);
+      padding: clamp(22px, 4vw, 34px);
+      background: rgba(255,255,255,.86);
+      box-shadow: var(--shadow);
+      min-height: 360px;
+      display: grid;
+      align-content: space-between;
+      gap: 24px;
+    }
+    .eyebrow {
+      color: var(--jade);
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    h1 {
+      margin: 10px 0 14px;
+      font-size: clamp(36px, 5vw, 68px);
+      line-height: 1.02;
+      letter-spacing: 0;
+      max-width: 780px;
+    }
+    .lede { margin: 0; color: var(--muted); font-size: 17px; line-height: 1.7; max-width: 760px; }
+    .hero-proof { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .proof-item { border-top: 2px solid var(--line); padding-top: 10px; min-width: 0; }
+    .proof-item strong { display: block; font-size: 22px; line-height: 1; }
+    .proof-item span { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .map-card {
+      border: 1px solid rgba(220, 228, 225, .88);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: #fff;
+      min-height: 360px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .map-head {
+      min-height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+    .map-head strong { font-size: 15px; }
+    .map-head span { color: var(--muted); font-size: 12px; }
+    #mapCanvas { width: 100%; min-height: 360px; height: 100%; }
+    main { padding: 0 clamp(18px, 4vw, 48px) 38px; display: grid; gap: 16px; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 12px; }
+    .metric {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(20, 33, 38, .06);
+      min-height: 112px;
+    }
+    .metric .label { color: var(--muted); font-size: 13px; }
+    .metric strong { display: block; margin-top: 12px; font-size: 28px; line-height: 1; }
+    .metric small { display: block; margin-top: 9px; color: var(--muted); line-height: 1.4; }
+    .content-grid { display: grid; grid-template-columns: minmax(340px, .92fr) minmax(520px, 1.08fr); gap: 16px; align-items: start; }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(20, 33, 38, .06);
+    }
+    h2 { margin: 0 0 14px; font-size: 20px; letter-spacing: 0; }
+    h3 { margin: 16px 0 8px; font-size: 15px; letter-spacing: 0; }
+    p { margin: 0 0 10px; color: var(--muted); line-height: 1.7; }
+    .summary-line { display: grid; gap: 10px; }
+    .summary-line div { border-left: 3px solid var(--jade); background: #f5faf8; padding: 11px 12px; border-radius: 6px; line-height: 1.6; }
+    .status-grid { display: grid; gap: 9px; margin-top: 14px; }
+    .status-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
     .status-row span:first-child { color: var(--muted); }
     .status-row strong { text-align: right; }
-    .ok { color: var(--green); }
-    .warn { color: var(--gold); }
-    .map { min-height: 360px; border-radius: 8px; border: 1px solid var(--line); overflow: hidden; background: #eaf2ef; }
-    #mapCanvas { width: 100%; height: 360px; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th, td { border-bottom: 1px solid var(--line); padding: 10px 8px; text-align: left; vertical-align: top; }
-    th { color: var(--muted); background: #f8fafb; font-size: 13px; }
-    .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .card { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fff; min-height: 160px; }
-    .card strong { display: block; margin-bottom: 8px; }
-    ul { margin: 0; padding-left: 18px; line-height: 1.7; }
-    pre { margin: 0; padding: 12px; background: #13202b; color: #dbeafe; border-radius: 8px; overflow: auto; font-size: 12px; line-height: 1.55; }
-    .error { border-left: 4px solid var(--red); background: #fff4f2; padding: 12px; border-radius: 6px; }
-    @media (max-width: 900px) { .grid, .three { grid-template-columns: 1fr; } }
+    .ok { color: var(--jade); }
+    .warn { color: var(--amber); }
+    .evidence-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .evidence-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; background: #fff; min-height: 210px; }
+    .evidence-card strong { display: block; margin-bottom: 10px; }
+    .evidence-card:nth-child(1) { border-top: 3px solid var(--blue); }
+    .evidence-card:nth-child(2) { border-top: 3px solid var(--amber); }
+    .evidence-card:nth-child(3) { border-top: 3px solid var(--rose); }
+    ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.72; }
+    .poi-list { display: grid; gap: 10px; }
+    .poi-card { display: grid; grid-template-columns: 34px 1fr auto; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius); padding: 11px; background: #fff; }
+    .poi-index { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; background: #eaf2ff; color: var(--blue); font-weight: 800; }
+    .poi-main strong { display: block; font-size: 14px; }
+    .poi-main span { display: block; color: var(--muted); font-size: 12px; margin-top: 3px; line-height: 1.35; }
+    .poi-clue { justify-self: end; color: var(--jade); background: rgba(18,128,92,.08); border: 1px solid rgba(18,128,92,.18); border-radius: 999px; padding: 5px 9px; font-size: 12px; white-space: nowrap; }
+    .shape { background: #13202b; color: #dbeafe; border-radius: var(--radius); padding: 14px; overflow: auto; font-size: 12px; line-height: 1.58; min-height: 210px; }
+    .error { border-left: 4px solid var(--rose); background: #fff4f2; padding: 12px; border-radius: 6px; color: var(--ink); }
+    @media (max-width: 1080px) { .hero, .content-grid { grid-template-columns: 1fr; } .metrics { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 720px) { .topbar { align-items: flex-start; flex-direction: column; } .hero-proof, .metrics, .evidence-board { grid-template-columns: 1fr; } .poi-card { grid-template-columns: 34px 1fr; } .poi-clue { grid-column: 2; justify-self: start; } #mapCanvas { min-height: 300px; } }
   </style>
 </head>
 <body>
-  <header>
-    <h1>CityScout Scale Demo</h1>
-    <div class="subtitle">当前最终状态看板：验证“唤醒城市沉睡的基因”这条叙事，是否已经被真实高德 API、地图证据、现场推断和待核实清单支撑起来。</div>
-    <div class="badges">
-      <span class="badge">真实高德 API</span>
-      <span class="badge">JSAPI 地图</span>
-      <span class="badge">现场证据路线</span>
-      <span class="badge">地图证据 / 现场推断 / 待核实</span>
-    </div>
-  </header>
-
-  <main>
-    <section class="grid">
-      <div class="panel">
-        <h2>最终定位</h2>
-        <p><strong>城市踏勘官 CityScout</strong></p>
-        <p>不是推荐去哪玩，而是帮用户带着一个城市判断走进现场，唤醒沉睡在街巷、设施、路径和公共空间里的城市基因。</p>
-        <p>当前 Demo 用高德地理编码、周边 POI、步行路线规划和 JSAPI 地图，把故事落到真实地点和现场证据上。</p>
-        <h3>运行状态</h3>
-        <div class="status" id="statusRows"></div>
+  <div class="app-shell">
+    <nav class="topbar">
+      <div class="brand">
+        <div class="brand-mark">CS</div>
+        <div>
+          <strong>城市踏勘官 CityScout</strong>
+          <span>Scale Demo · Real Amap Evidence Route</span>
+        </div>
       </div>
-      <div class="panel">
-        <h2>真实地图证据</h2>
-        <div class="map"><div id="mapCanvas"></div></div>
+      <div class="top-actions">
+        <span class="chip ok">真实高德 API</span>
+        <span class="chip ok">JSAPI 地图</span>
+        <span class="chip">现场证据路线</span>
       </div>
-    </section>
+    </nav>
 
-    <section class="panel">
-      <h2>真实 API 返回摘要</h2>
-      <div id="apiSummary">正在读取本地代理...</div>
-    </section>
-
-    <section class="panel">
-      <h2>POI 线索样本</h2>
-      <table>
-        <thead><tr><th>序号</th><th>POI</th><th>类型</th><th>为什么是线索</th><th>地址</th></tr></thead>
-        <tbody id="poiRows"></tbody>
-      </table>
-    </section>
-
-    <section class="three">
-      <div class="card">
-        <strong>地图证据</strong>
-        <ul id="mapEvidence"></ul>
+    <section class="hero">
+      <div class="hero-copy">
+        <div>
+          <div class="eyebrow">Awaken The City's Sleeping Genes</div>
+          <h1>把城市线索变成可现场验证的证据路线</h1>
+          <p class="lede">当前最终状态看板：验证“唤醒城市沉睡的基因”这条叙事，是否已经被真实高德 API、地图证据、现场推断和待核实清单支撑起来。</p>
+        </div>
+        <div class="hero-proof">
+          <div class="proof-item"><strong id="heroPois">--</strong><span>真实 POI 线索</span></div>
+          <div class="proof-item"><strong id="heroRoute">--</strong><span>首段路线距离</span></div>
+          <div class="proof-item"><strong id="heroLine">--</strong><span>路线折点</span></div>
+        </div>
       </div>
-      <div class="card">
-        <strong>现场推断</strong>
-        <ul id="fieldInference"></ul>
-      </div>
-      <div class="card">
-        <strong>待核实内容</strong>
-        <ul id="pendingVerification"></ul>
+      <div class="map-card">
+        <div class="map-head">
+          <div><strong>真实地图证据</strong><br><span id="mapCaption">正在加载高德地图...</span></div>
+          <span class="chip ok" id="mapChip">加载中</span>
+        </div>
+        <div id="mapCanvas"></div>
       </div>
     </section>
 
-    <section class="panel">
-      <h2>当前 Skill 输出结构</h2>
-      <pre id="skillShape"></pre>
-    </section>
-  </main>
+    <main>
+      <section class="metrics">
+        <div class="metric"><span class="label">本地代理</span><strong id="metricProxy">读取中</strong><small>Node 代理读取本机 .env，Key 不进入公开仓库。</small></div>
+        <div class="metric"><span class="label">真实高德 API</span><strong id="metricApi">待验证</strong><small>地理编码、周边 POI、步行路线规划。</small></div>
+        <div class="metric"><span class="label">地图渲染</span><strong id="metricMap">待加载</strong><small>高德 JSAPI 地图、POI marker、polyline。</small></div>
+        <div class="metric"><span class="label">Skill 结构</span><strong>已强化</strong><small>证据、推断、待核实三分法。</small></div>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel">
+          <h2>最终定位</h2>
+          <div class="summary-line">
+            <div><strong>不是推荐去哪玩。</strong>CityScout 帮用户带着一个城市判断走进现场，唤醒沉睡在街巷、设施、路径和公共空间里的城市基因。</div>
+            <div><strong>不是只展示地图。</strong>它用高德地理编码、周边 POI、步行路线规划和 JSAPI 地图，把故事落到真实地点和现场证据上。</div>
+          </div>
+          <h3>运行状态</h3>
+          <div class="status-grid" id="statusRows"></div>
+        </div>
+
+        <div class="panel">
+          <h2>真实 API 返回摘要</h2>
+          <div id="apiSummary">正在读取本地代理...</div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>地图证据 / 现场推断 / 待核实</h2>
+        <div class="evidence-board">
+          <div class="evidence-card"><strong>地图证据</strong><ul id="mapEvidence"></ul></div>
+          <div class="evidence-card"><strong>现场推断</strong><ul id="fieldInference"></ul></div>
+          <div class="evidence-card"><strong>待核实内容</strong><ul id="pendingVerification"></ul></div>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel">
+          <h2>POI 线索样本</h2>
+          <div class="poi-list" id="poiRows"></div>
+        </div>
+        <div class="panel">
+          <h2>当前 Skill 输出结构</h2>
+          <pre class="shape" id="skillShape"></pre>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script>
-    const state = {
-      area: "福州烟台山历史风貌区",
-      city: "福州"
-    };
+    const state = { area: "福州烟台山历史风貌区", city: "福州" };
+    const $ = (id) => document.getElementById(id);
 
     function setStatus(rows) {
-      document.getElementById("statusRows").innerHTML = rows.map(([label, value, cls]) => `
+      $("statusRows").innerHTML = rows.map(([label, value, cls]) => `
         <div class="status-row"><span>${label}</span><strong class="${cls || ""}">${value}</strong></div>
       `).join("");
     }
@@ -160,14 +316,22 @@
       return "城市线索";
     }
 
-    async function main() {
-      setStatus([
-        ["本地代理", "读取中", "warn"],
-        ["真实高德 API", "待验证", "warn"],
-        ["JSAPI 地图", "待加载", "warn"],
-        ["Skill 结构", "已强化", "ok"]
-      ]);
+    function updateMetrics(payload) {
+      $("metricProxy").textContent = "正常";
+      $("metricProxy").className = "ok";
+      $("metricApi").textContent = "已返回";
+      $("metricApi").className = "ok";
+      $("metricMap").textContent = "已渲染";
+      $("metricMap").className = "ok";
+      $("heroPois").textContent = payload.pois.length;
+      $("heroRoute").textContent = `${payload.routeValidation.distanceMeters}m`;
+      $("heroLine").textContent = payload.routeValidation.line?.length || 0;
+      $("mapCaption").textContent = `${payload.geocode.formattedAddress} · ${payload.geocode.location}`;
+      $("mapChip").textContent = "已渲染";
+    }
 
+    async function main() {
+      setStatus([["本地代理", "读取中", "warn"], ["真实高德 API", "待验证", "warn"], ["JSAPI 地图", "待加载", "warn"], ["Skill 结构", "已强化", "ok"]]);
       const url = `/api/city-scout?area=${encodeURIComponent(state.area)}&city=${encodeURIComponent(state.city)}`;
       const response = await fetch(url, { headers: { accept: "application/json" } });
       const payload = await readJson(response, "CityScout API");
@@ -178,74 +342,50 @@
       const map = new AMap.Map("mapCanvas", { zoom: 16, center, viewMode: "2D" });
       const overlays = [];
       const centerMarker = new AMap.Marker({ position: center, title: payload.area, label: { content: "片区定位", direction: "top" } });
-      map.add(centerMarker);
-      overlays.push(centerMarker);
+      map.add(centerMarker); overlays.push(centerMarker);
       payload.pois.forEach((poi, index) => {
         const position = poi.location.split(",").map(Number);
         const marker = new AMap.Marker({ position, title: poi.name, label: { content: `${index + 1}. ${poi.name}`, direction: "right" } });
-        map.add(marker);
-        overlays.push(marker);
+        map.add(marker); overlays.push(marker);
       });
       if (payload.routeValidation.line?.length >= 2) {
         const polyline = new AMap.Polyline({ path: payload.routeValidation.line, strokeColor: "#1769e0", strokeWeight: 7, strokeOpacity: 0.9, lineJoin: "round", lineCap: "round" });
-        map.add(polyline);
-        overlays.push(polyline);
+        map.add(polyline); overlays.push(polyline);
       }
-      map.setFitView(overlays, false, [36, 36, 36, 36]);
+      map.setFitView(overlays, false, [34, 34, 34, 34]);
 
-      setStatus([
-        ["本地代理", "正常", "ok"],
-        ["真实高德 API", "已返回", "ok"],
-        ["JSAPI 地图", "已渲染", "ok"],
-        ["路线点数", `${payload.routeValidation.line?.length || 0} 个`, "ok"]
-      ]);
+      updateMetrics(payload);
+      setStatus([["本地代理", "正常", "ok"], ["真实高德 API", "已返回", "ok"], ["JSAPI 地图", "已渲染", "ok"], ["路线点数", `${payload.routeValidation.line?.length || 0} 个`, "ok"]]);
 
-      document.getElementById("apiSummary").innerHTML = `
-        <p><strong>片区：</strong>${payload.area}</p>
-        <p><strong>地理编码：</strong>${payload.geocode.formattedAddress}（${payload.geocode.location}）</p>
-        <p><strong>首段步行验证：</strong>${payload.routeValidation.origin} → ${payload.routeValidation.destination}，${payload.routeValidation.distanceMeters} 米，约 ${payload.routeValidation.durationSeconds} 秒。</p>
-        <p><strong>边界提醒：</strong>${payload.boundaryNote}</p>
+      $("apiSummary").innerHTML = `
+        <div class="summary-line">
+          <div><strong>片区</strong><br>${payload.area}</div>
+          <div><strong>地理编码</strong><br>${payload.geocode.formattedAddress}（${payload.geocode.location}）</div>
+          <div><strong>首段步行验证</strong><br>${payload.routeValidation.origin} → ${payload.routeValidation.destination}，${payload.routeValidation.distanceMeters} 米，约 ${payload.routeValidation.durationSeconds} 秒。</div>
+          <div><strong>边界提醒</strong><br>${payload.boundaryNote}</div>
+        </div>
       `;
 
-      document.getElementById("poiRows").innerHTML = payload.pois.map((poi, index) => `
-        <tr>
-          <td>${index + 1}</td>
-          <td>${poi.name}</td>
-          <td>${poi.type}</td>
-          <td>${clueType(poi)}</td>
-          <td>${poi.address || "未返回"}</td>
-        </tr>
+      $("poiRows").innerHTML = payload.pois.map((poi, index) => `
+        <div class="poi-card">
+          <div class="poi-index">${index + 1}</div>
+          <div class="poi-main"><strong>${poi.name}</strong><span>${poi.type}<br>${poi.address || "未返回"}</span></div>
+          <div class="poi-clue">${clueType(poi)}</div>
+        </div>
       `).join("");
 
-      document.getElementById("mapEvidence").innerHTML = [
-        `地理编码坐标：${payload.geocode.location}`,
-        `周边 POI 样本：${payload.pois.length} 个`,
-        `首段路线距离：${payload.routeValidation.distanceMeters} 米`,
-        `JSAPI 地图已显示 POI 和路线`
-      ].map(item => `<li>${item}</li>`).join("");
+      $("mapEvidence").innerHTML = [`地理编码坐标：${payload.geocode.location}`, `周边 POI 样本：${payload.pois.length} 个`, `首段路线距离：${payload.routeValidation.distanceMeters} 米`, "JSAPI 地图已显示 POI 和路线"].map(item => `<li>${item}</li>`).join("");
+      $("fieldInference").innerHTML = ["停车场与入口节点密集，说明可达性和停车组织是关键议题。", "公共服务、历史风貌和商业节点需要被串联，而不是被单点打卡。", "当前片区存在被证据路线唤醒为城市更新叙事的潜力。"].map(item => `<li>${item}</li>`).join("");
+      $("pendingVerification").innerHTML = ["地理编码返回近似地点，需要现场或二次检索校准。", "实际人流、空置率、夜间照明和停留行为需要现场照片补证。", "POI 是否仍在营业、是否开放、是否可进入需要核实。"].map(item => `<li>${item}</li>`).join("");
 
-      document.getElementById("fieldInference").innerHTML = [
-        "停车场与入口节点密集，说明可达性和停车组织是关键议题。",
-        "公共服务、历史风貌和商业节点需要被串联，而不是被单点打卡。",
-        "当前片区存在被证据路线唤醒为城市更新叙事的潜力。"
-      ].map(item => `<li>${item}</li>`).join("");
-
-      document.getElementById("pendingVerification").innerHTML = [
-        "地理编码返回近似地点，需要现场或二次检索校准。",
-        "实际人流、空置率、夜间照明和停留行为需要现场照片补证。",
-        "POI 是否仍在营业、是否开放、是否可进入需要核实。"
-      ].map(item => `<li>${item}</li>`).join("");
-
-      document.getElementById("skillShape").textContent = JSON.stringify({
-        concept: "唤醒城市沉睡的基因",
-        outputSections: ["任务判断", "被唤醒的城市基因", "高德能力调用说明", "证据路线", "地图证据 / 现场推断 / 待核实", "风险与机会", "现场执行清单", "3 句汇报摘要", "下一步"],
-        qualityRule: "POI is clue, route is evidence route, conclusion must separate evidence/inference/uncertainty"
-      }, null, 2);
+      $("skillShape").textContent = JSON.stringify({ concept: "唤醒城市沉睡的基因", outputSections: ["任务判断", "被唤醒的城市基因", "高德能力调用说明", "证据路线", "地图证据 / 现场推断 / 待核实", "风险与机会", "现场执行清单", "3 句汇报摘要", "下一步"], qualityRule: "POI is clue, route is evidence route, conclusion must separate evidence/inference/uncertainty" }, null, 2);
     }
 
     main().catch((error) => {
       setStatus([["运行失败", error.message, "warn"]]);
-      document.getElementById("apiSummary").innerHTML = `<div class="error">${error.message}</div>`;
+      $("apiSummary").innerHTML = `<div class="error">${error.message}</div>`;
+      $("mapChip").textContent = "失败";
+      $("mapChip").className = "chip";
     });
   </script>
 </body>
