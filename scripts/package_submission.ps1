@@ -25,6 +25,9 @@ Copy-Item -LiteralPath "submission\real_api_run_report.md" -Destination (Join-Pa
 Copy-Item -LiteralPath "submission\amap_api_integration.md" -Destination (Join-Path $packageDir "amap_api_integration.md") -Force
 Copy-Item -LiteralPath "README.md" -Destination (Join-Path $packageDir "README.md") -Force
 
+New-Item -ItemType Directory -Force -Path (Join-Path $packageDir "assets") | Out-Null
+Copy-Item -Path "assets\*" -Destination (Join-Path $packageDir "assets") -Recurse -Force
+
 New-Item -ItemType Directory -Force -Path (Join-Path $packageDir "scripts") | Out-Null
 Copy-Item -LiteralPath "scripts\test_amap_web_service.mjs" -Destination (Join-Path $packageDir "scripts\test_amap_web_service.mjs") -Force
 Copy-Item -LiteralPath "scripts\amap_demo_server.mjs" -Destination (Join-Path $packageDir "scripts\amap_demo_server.mjs") -Force
@@ -49,5 +52,6 @@ Get-ChildItem -LiteralPath $packageDir -Recurse -File |
 
 Write-Host ""
 Write-Host "Created: $zipPath"
+
 
 
