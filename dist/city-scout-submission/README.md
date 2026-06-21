@@ -57,13 +57,19 @@ city-scout-amap-skill/    # ClawHub/GitHub 发布用 Skill 包
 
 ## Demo
 
-直接打开：
+推荐评审入口：先打开最终状态看板，快速查看真实高德 API、地图底图、POI 点位、路线折线和 Skill 输出结构。
+
+```text
+http://127.0.0.1:8766/demo/scale.html
+```
+
+交互演示入口：
 
 ```text
 demo/index.html
 ```
 
-默认 Demo 使用示例数据模拟高德 API 返回结果，适合直接打开或上传报名表。
+默认交互 Demo 使用示例数据模拟高德 API 返回结果，适合直接打开或上传报名表。
 
 如果要查看真实高德 Web 服务返回，可使用本地代理模式。真实 Key 只由本机 Node 服务读取，不进入浏览器页面和公开仓库：
 
@@ -85,7 +91,7 @@ http://127.0.0.1:8766/demo/index.html
 http://127.0.0.1:8766/demo/scale.html
 ```
 
-勾选“真实 API 接入模式”后，页面会展示真实地理编码、周边 POI 和步行路线验证结果。
+`scale.html` 是当前推荐展示页，采用更接近开源高完成度后台模板的 dashboard 结构：首屏展示概念、真实地图、POI 数量、路线距离和证据状态，下方展示 API 摘要、POI 线索卡片、地图证据、现场推断和待核实清单。
 
 ## 真实 API 试跑
 
@@ -154,6 +160,8 @@ https://lbs.amap.com/ai/skillzone
 ## 原创声明
 
 本作品为原创 Skill 设计，未在其他赛事中获奖，未公开发表或商业化。
+
+
 
 
 
