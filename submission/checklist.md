@@ -30,7 +30,8 @@
 - [x] 有 ClawHub/GitHub 发布用 Skill 包
 - [x] 有 ClawHub 发布页
 - [x] 有传播封面图：`assets/cityscout-cover.png`
-- [ ] 有演示视频
+- [x] 有演示视频拍摄表：`submission/video_shotlist.md`
+- [ ] 有最终演示视频文件或外链
 
 ## 仍需 Frank 填写或确认
 
