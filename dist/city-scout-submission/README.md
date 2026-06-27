@@ -57,6 +57,12 @@ city-scout-amap-skill/    # ClawHub/GitHub 发布用 Skill 包
 
 ## Demo
 
+评委快速入口：
+
+```text
+http://127.0.0.1:8766/demo/judge.html
+```
+
 推荐评审入口：先打开最终状态看板，快速查看真实高德 API、地图底图、POI 点位、路线折线和 Skill 输出结构。
 
 ```text

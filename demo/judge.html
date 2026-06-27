@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CityScout Judge Pack | 城市踏勘官</title>
+  <style>
+    :root {
+      --ink: #142126;
+      --muted: #5c6872;
+      --line: #dce4e1;
+      --panel: #ffffff;
+      --soft: #eef5f2;
+      --blue: #1769e0;
+      --jade: #12805c;
+      --amber: #a56a00;
+      --rose: #b94135;
+      --shadow: 0 18px 50px rgba(20, 33, 38, .10);
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 4%, rgba(18,128,92,.14), transparent 28%),
+        radial-gradient(circle at 88% 0%, rgba(23,105,224,.12), transparent 30%),
+        linear-gradient(180deg, #f8fbfa 0%, #edf3f1 100%);
+    }
+    a { color: inherit; text-decoration: none; }
+    .shell { min-height: 100vh; }
+    .topbar {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px clamp(18px, 4vw, 48px);
+      border-bottom: 1px solid rgba(220,228,225,.86);
+      background: rgba(255,255,255,.84);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: var(--radius);
+      color: #fff;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--jade), var(--blue));
+      flex: 0 0 auto;
+    }
+    .brand strong { display: block; font-size: 15px; }
+    .brand span { display: block; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .nav { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .chip, .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--muted);
+      padding: 6px 11px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .button.primary { border-color: transparent; background: var(--ink); color: #fff; }
+    .hero {
+      padding: 34px clamp(18px, 4vw, 48px) 18px;
+      display: grid;
+      grid-template-columns: minmax(320px, 1.05fr) minmax(320px, .95fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+    .hero-copy, .cover-card, .panel, .metric {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.88);
+      box-shadow: var(--shadow);
+    }
+    .hero-copy {
+      padding: clamp(24px, 4vw, 38px);
+      min-height: 520px;
+      display: grid;
+      align-content: space-between;
+      gap: 28px;
+    }
+    .eyebrow { color: var(--jade); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+    h1 { margin: 10px 0 16px; max-width: 820px; font-size: clamp(40px, 6vw, 76px); line-height: 1.02; letter-spacing: 0; }
+    .lede { max-width: 760px; margin: 0; color: var(--muted); font-size: 18px; line-height: 1.72; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .cover-card { overflow: hidden; display: grid; place-items: center; padding: 16px; min-height: 520px; }
+    .cover-card img { display: block; width: min(100%, 390px); height: auto; border-radius: 8px; box-shadow: 0 20px 54px rgba(20,33,38,.16); }
+    main { padding: 0 clamp(18px, 4vw, 48px) 42px; display: grid; gap: 16px; }
+    .metrics { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 12px; }
+    .metric { padding: 16px; min-height: 126px; box-shadow: 0 10px 30px rgba(20,33,38,.06); }
+    .metric span { display: block; color: var(--muted); font-size: 13px; }
+    .metric strong { display: block; margin-top: 14px; font-size: 30px; line-height: 1; }
+    .metric small { display: block; margin-top: 10px; color: var(--muted); line-height: 1.45; }
+    .grid { display: grid; grid-template-columns: minmax(300px, .86fr) minmax(420px, 1.14fr); gap: 16px; align-items: start; }
+    .panel { padding: 18px; box-shadow: 0 10px 30px rgba(20,33,38,.06); }
+    h2 { margin: 0 0 14px; font-size: 20px; letter-spacing: 0; }
+    h3 { margin: 16px 0 8px; font-size: 15px; letter-spacing: 0; }
+    p { margin: 0 0 10px; color: var(--muted); line-height: 1.72; }
+    .compare { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .compare th, .compare td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .compare th { color: var(--muted); background: #f7faf9; }
+    .evidence { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .evidence article { border: 1px solid var(--line); border-top: 3px solid var(--blue); border-radius: var(--radius); background: #fff; padding: 16px; min-height: 190px; }
+    .evidence article:nth-child(2) { border-top-color: var(--amber); }
+    .evidence article:nth-child(3) { border-top-color: var(--rose); }
+    .evidence strong { display: block; margin-bottom: 10px; }
+    ul { margin: 0; padding-left: 18px; color: var(--muted); line-height: 1.72; }
+    .links { display: grid; gap: 10px; }
+    .link-row { display: flex; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+    .link-row span { color: var(--muted); font-size: 13px; }
+    .status { display: grid; gap: 10px; }
+    .status-row { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+    .status-row span:first-child { color: var(--muted); }
+    .ok { color: var(--jade); }
+    @media (max-width: 1080px) {
+      .hero, .grid { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+    }
+    @media (max-width: 720px) {
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .metrics, .evidence { grid-template-columns: 1fr; }
+      .link-row { flex-direction: column; }
+      .cover-card { min-height: 420px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <nav class="topbar">
+      <div class="brand">
+        <div class="mark">CS</div>
+        <div>
+          <strong>城市踏勘官 CityScout</strong>
+          <span>Judge Pack · Amap Skill Contest</span>
+        </div>
+      </div>
+      <div class="nav">
+        <a class="chip" href="./scale.html">Scale Demo</a>
+        <a class="chip" href="./index.html">Interactive Demo</a>
+        <a class="chip" href="../assets/cityscout-cover.png">Cover</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-copy">
+        <div>
+          <div class="eyebrow">Judge Fast Read</div>
+          <h1>不是推荐去哪玩，而是判断城市该怎么看</h1>
+          <p class="lede">CityScout 用高德地理编码、POI 搜索、路线规划和 JSAPI 地图，把城市里沉睡的线索组织成可现场验证的证据路线。故事让人愿意走进城市，证据让判断站得住。</p>
+        </div>
+        <div class="actions">
+          <a class="button primary" href="./scale.html">查看最终状态看板</a>
+          <a class="button" href="./index.html">查看交互 Demo</a>
+          <a class="button" href="https://github.com/kue0000/city-scout-amap-skill">GitHub</a>
+          <a class="button" href="https://clawhub.ai/kue0000/city-scout-amap-skill">ClawHub</a>
+        </div>
+      </div>
+      <div class="cover-card">
+        <img src="../assets/cityscout-cover.png" alt="CityScout 传播封面">
+      </div>
+    </section>
+
+    <main>
+      <section class="metrics">
+        <div class="metric"><span>真实 POI 线索</span><strong>8</strong><small>来自高德周边搜索的现场候选线索。</small></div>
+        <div class="metric"><span>首段路线距离</span><strong>245m</strong><small>用步行路线规划验证点位可达性。</small></div>
+        <div class="metric"><span>路线折点</span><strong>15</strong><small>JSAPI 地图可渲染路线折线。</small></div>
+        <div class="metric"><span>输出模型</span><strong>3 层</strong><small>地图证据、现场推断、待核实。</small></div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>一句话</h2>
+          <p><strong>唤醒城市沉睡的基因。</strong></p>
+          <p>输入一个片区和任务目标，CityScout 输出一条可走、可看、可拍、可汇报的现场证据路线。</p>
+          <h3>适用人群</h3>
+          <ul>
+            <li>城市更新与规划设计管理人员</li>
+            <li>商业选址与招商运营人员</li>
+            <li>文旅策划和街区运营人员</li>
+            <li>需要快速组织现场调研的 AI Agent 用户</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h2>差异化</h2>
+          <table class="compare">
+            <thead><tr><th>普通地图 / Citywalk</th><th>CityScout</th></tr></thead>
+            <tbody>
+              <tr><td>推荐去哪玩</td><td>追问想判断什么</td></tr>
+              <tr><td>把 POI 当目的地</td><td>把 POI 当城市线索</td></tr>
+              <tr><td>生成游览路线</td><td>生成现场证据路线</td></tr>
+              <tr><td>强调好逛、好看、好吃</td><td>强调证据、推断、待核实</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>证据模型</h2>
+        <div class="evidence">
+          <article>
+            <strong>地图证据</strong>
+            <ul>
+              <li>地理编码坐标</li>
+              <li>POI 与设施分布</li>
+              <li>路线距离与可达性</li>
+            </ul>
+          </article>
+          <article>
+            <strong>现场推断</strong>
+            <ul>
+              <li>活力潜力</li>
+              <li>界面连续性</li>
+              <li>服务与安全短板</li>
+            </ul>
+          </article>
+          <article>
+            <strong>待核实</strong>
+            <ul>
+              <li>人流、空置率、照明</li>
+              <li>开闭店与可进入性</li>
+              <li>真实停留行为</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="grid">
+        <div class="panel">
+          <h2>评委入口</h2>
+          <div class="links">
+            <a class="link-row" href="./scale.html"><strong>Scale Demo</strong><span>最终状态看板，优先展示</span></a>
+            <a class="link-row" href="./index.html"><strong>Interactive Demo</strong><span>输入片区并生成证据路线</span></a>
+            <a class="link-row" href="../assets/cityscout-cover.png"><strong>Cover PNG</strong><span>小红书 / 朋友圈传播图</span></a>
+            <a class="link-row" href="../submission/demo_script.md"><strong>Demo Script</strong><span>60-90 秒录屏脚本</span></a>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>提交物状态</h2>
+          <div class="status">
+            <div class="status-row"><span>Skill 主文件</span><strong class="ok">已完成</strong></div>
+            <div class="status-row"><span>真实高德 API 验证</span><strong class="ok">已跑通</strong></div>
+            <div class="status-row"><span>GitHub / ClawHub</span><strong class="ok">已发布</strong></div>
+            <div class="status-row"><span>传播封面</span><strong class="ok">已生成</strong></div>
+            <div class="status-row"><span>下一步</span><strong>录制 60-90 秒 Demo 视频</strong></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

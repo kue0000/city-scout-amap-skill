@@ -14,7 +14,7 @@
 
 - [x] GitHub 公开仓库地址
 - [x] ClawHub 公开页面地址
-- [x] Demo 演示：上传或录屏 `demo/index.html`
+- [x] Demo 演示：优先录屏 `demo/judge.html` 和 `demo/scale.html`
 - [ ] 外站分享链接
 
 ## 冲奖检查
@@ -29,7 +29,8 @@
 - [x] 有 GitHub README
 - [x] 有 ClawHub/GitHub 发布用 Skill 包
 - [x] 有 ClawHub 发布页
-- [ ] 有截图或演示视频
+- [x] 有传播封面图：`assets/cityscout-cover.png`
+- [ ] 有演示视频
 
 ## 仍需 Frank 填写或确认
 

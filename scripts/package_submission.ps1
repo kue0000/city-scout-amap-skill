@@ -34,8 +34,7 @@ Copy-Item -LiteralPath "scripts\amap_demo_server.mjs" -Destination (Join-Path $p
 Copy-Item -LiteralPath ".env.example" -Destination (Join-Path $packageDir ".env.example") -Force
 
 New-Item -ItemType Directory -Force -Path (Join-Path $packageDir "demo") | Out-Null
-Copy-Item -LiteralPath "demo\index.html" -Destination (Join-Path $packageDir "demo\index.html") -Force
-Copy-Item -LiteralPath "demo\scale.html" -Destination (Join-Path $packageDir "demo\scale.html") -Force
+Copy-Item -Path "demo\*.html" -Destination (Join-Path $packageDir "demo") -Force
 
 New-Item -ItemType Directory -Force -Path (Join-Path $packageDir "city-scout-amap-skill") | Out-Null
 Copy-Item -LiteralPath "city-scout-amap-skill\*" -Destination (Join-Path $packageDir "city-scout-amap-skill") -Recurse -Force
